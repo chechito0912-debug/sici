@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventro V2 | Control de Inventarios</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<section id="loginView" class="login-view">
+  <div class="login-card">
+    <div class="logo-circle">SCI</div>
+    <h1>SISTEMA CONTROL<br>DE INVENTARIOS</h1>
+    <form id="loginForm">
+      <label>Usuario</label><input id="usuario" required placeholder="Ingrese su usuario">
+      <label>Rol</label>
+      <select id="rol" required>
+        <option value="">Seleccione un rol</option>
+        <option value="almacenista">Almacenista</option>
+        <option value="coordinador">Coordinador de área</option>
+        <option value="gerente">Gerente</option>
+        <option value="edi">Usuario EDI</option>
+      </select>
+      <label>Contraseña</label><input id="contrasena" type="password" required placeholder="Ingrese su contraseña">
+      <button class="btn-primary" type="submit">🔐 INGRESAR</button>
+      <p class="login-note">Demostración académica: cualquier contraseña permite ingresar.</p>
+    </form>
+  </div>
+</section>
+
+<section id="appView" class="app-view hidden">
+<header class="topbar">
+  <div class="brand"><div class="brand-logo">SCI</div><div><strong>INVENTRO</strong><small>Sistema de Control de Inventarios</small></div></div>
+  <div class="topbar-user"><span>👤</span><div><strong id="usuarioActivo">Usuario</strong><small id="rolActivo">Rol</small></div><button id="logoutBtn" class="btn-logout">Cerrar sesión</button></div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+  <button class="nav-item active" data-section="dashboard">🏠 <span>Inicio</span></button>
+  <button class="nav-item role-edit" data-section="productos">📦 <span>Productos</span></button>
+  <button class="nav-item" data-section="inventario">📋 <span>Inventario</span></button>
+  <button class="nav-item role-edit" data-section="movimientos">🔄 <span>Movimientos</span></button>
+  <button class="nav-item" data-section="reportes">📊 <span>Reportes</span></button>
+  <button class="nav-item role-edit" data-section="administracion">⚙️ <span>Administración</span></button>
+</aside>
+<main class="main-content">
+
+<section id="dashboard" class="page-section active-section">
+  <div class="page-title"><div><h2>Dashboard</h2><p id="dashboardText">Resumen general del sistema de inventarios.</p></div></div>
+  <div class="cards-grid">
+    <article class="stat-card"><span>📦</span><div><small>Productos</small><strong id="totalProductos">0</strong></div></article>
+    <article class="stat-card"><span>📥</span><div><small>Entradas</small><strong id="totalEntradas">0</strong></div></article>
+    <article class="stat-card"><span>📤</span><div><small>Salidas</small><strong id="totalSalidas">0</strong></div></article>
+    <article class="stat-card"><span>⚠️</span><div><small>Stock bajo</small><strong id="stockBajo">0</strong></div></article>
+  </div>
+  <div id="restrictedNotice" class="notice hidden"><strong>Modo consulta:</strong> este rol únicamente puede verificar existencias y generar reportes. No puede agregar, editar ni eliminar información.</div>
+  <div class="panel"><h3>Movimientos recientes</h3><div class="table-wrapper"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Tipo</th><th>Cantidad</th><th>Usuario</th></tr></thead><tbody id="recentMovements"></tbody></table></div></div>
+</section>
+
+<section id="productos" class="page-section">
+ <div class="page-title"><div><h2>Gestión de productos</h2><p>Registrar, consultar, editar y eliminar productos.</p></div><button id="showProductForm" class="btn-primary role-edit">+ Registrar producto</button></div>
+ <div id="productFormPanel" class="panel hidden"><div class="panel-header"><h3 id="productFormTitle">Registrar producto</h3><button id="closeProductForm" class="close-btn">✕</button></div>
+ <form id="productForm" class="form-grid"><input type="hidden" id="editProductId">
+ <div><label>Código</label><input id="codigo" required></div><div><label>Nombre</label><input id="nombreProducto" required></div>
+ <div><label>Categoría</label><select id="categoria"><option>Materiales</option><option>Herramientas</option><option>Equipos</option></select></div>
+ <div><label>Cantidad</label><input id="cantidad" type="number" min="0" required></div><div><label>Stock mínimo</label><input id="stockMinimo" type="number" min="0" required></div><div><label>Precio</label><input id="precio" type="number" min="0" required></div>
+ <div class="form-actions"><button class="btn-primary">Guardar producto</button><button type="button" id="cancelProduct" class="btn-light">Cancelar</button></div></form></div>
+ <div class="panel"><div class="toolbar"><input id="buscarProducto" placeholder="Buscar producto..."></div><div class="table-wrapper"><table><thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Cantidad</th><th>Acciones</th></tr></thead><tbody id="productsTable"></tbody></table></div></div>
+</section>
+
+<section id="inventario" class="page-section"><div class="page-title"><div><h2>Verificar existencias</h2><p>Consulta del saldo disponible de cada producto.</p></div></div><div class="panel"><div class="toolbar"><input id="buscarInventario" placeholder="Buscar por producto o código..."></div><div class="table-wrapper"><table><thead><tr><th>Código</th><th>Producto</th><th>Existencias</th><th>Stock mínimo</th><th>Estado</th></tr></thead><tbody id="inventoryTable"></tbody></table></div></div></section>
+
+<section id="movimientos" class="page-section"><div class="page-title"><div><h2>Movimientos</h2><p>Registrar entradas y salidas de productos.</p></div></div>
+<div class="two-columns"><div class="panel"><h3>Registrar movimiento</h3><form id="movementForm" class="form-grid"><div><label>Producto</label><select id="movProducto"></select></div><div><label>Tipo</label><select id="movTipo"><option value="Entrada">Entrada</option><option value="Salida">Salida</option></select></div><div><label>Cantidad</label><input id="movCantidad" type="number" min="1" required></div><div><label>Fecha</label><input id="movFecha" type="date" required></div><div class="form-actions"><button class="btn-primary">Registrar movimiento</button></div></form></div>
+<div class="panel"><h3>Historial</h3><div class="table-wrapper"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Tipo</th><th>Cantidad</th></tr></thead><tbody id="movementsTable"></tbody></table></div></div></div></section>
+
+<section id="reportes" class="page-section"><div class="page-title"><div><h2>Reportes</h2><p>Consultar y generar reportes del sistema.</p></div></div><div class="panel report-box"><div><label>Tipo de reporte</label><select id="reportType"><option value="inventario">Inventario actual</option><option value="movimientos">Movimientos registrados</option></select></div><button id="generateReport" class="btn-primary">Generar reporte</button><button id="printReport" class="btn-light">🖨️ Imprimir</button></div><div id="reportResult" class="panel hidden"></div></section>
+
+<section id="administracion" class="page-section"><div class="page-title"><div><h2>Administración</h2><p>Opciones generales del sistema.</p></div></div><div class="admin-grid">
+ <article class="admin-card"><div class="admin-icon">👥</div><h3>Usuarios</h3><p>Agregar usuarios y administrar contraseñas.</p><button id="openUsers" class="btn-secondary">Administrar usuarios</button></article>
+ <article class="admin-card"><div class="admin-icon">⚙️</div><h3>Configuración</h3><p>Modificar las opciones generales del sistema.</p><button id="openSettings" class="btn-secondary">Abrir configuración</button></article>
+</div>
+<div id="usersPanel" class="panel hidden"><div class="panel-header"><h3>Administración de usuarios</h3><button class="close-btn" data-close="usersPanel">✕</button></div>
+ <form id="userForm" class="form-grid"><input type="hidden" id="editUserId"><div><label>Nombre de usuario</label><input id="newUserName" required></div><div><label>Rol</label><select id="newUserRole"><option value="almacenista">Almacenista</option><option value="coordinador">Coordinador de área</option><option value="gerente">Gerente</option><option value="edi">Usuario EDI</option></select></div><div><label>Contraseña</label><input id="newUserPassword" type="password" required></div><div class="form-actions"><button class="btn-primary">Guardar usuario</button><button type="button" id="cancelUser" class="btn-light">Cancelar</button></div></form>
+ <div class="table-wrapper"><table><thead><tr><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="usersTable"></tbody></table></div></div>
+<div id="settingsPanel" class="panel hidden"><div class="panel-header"><h3>Configuración del sistema</h3><button class="close-btn" data-close="settingsPanel">✕</button></div>
+ <form id="settingsForm" class="form-grid"><div><label>Nombre del sistema</label><input id="systemName" required></div><div><label>Mensaje de bienvenida</label><input id="welcomeMessage" required></div><div><label>Stock mínimo general</label><input id="defaultMinStock" type="number" min="0" required></div><div><label>Modo mantenimiento</label><select id="maintenance"><option value="off">Desactivado</option><option value="on">Activado</option></select></div><div class="form-actions"><button class="btn-primary">Guardar configuración</button></div></form></div>
+</section>
+</main></div></section>
+<div id="toast" class="toast hidden"></div>
+<script src="js/script.js"></script>
+</body></html>
