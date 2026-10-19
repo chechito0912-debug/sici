@@ -9,21 +9,24 @@
 <body>
 <section id="loginView" class="login-view">
   <div class="login-card">
-    <div class="logo-circle">SCI</div>
+    <div class="logo-circle">SICI</div>
     <h1>SISTEMA CONTROL<br>DE INVENTARIOS</h1>
     <form id="loginForm">
+      <div>
+        <label for="loginPassword">contraseña</label>
+      </div>
+
       <label>Usuario</label><input id="usuario" required placeholder="Ingrese su usuario">
       <label>Rol</label>
       <select id="rol" required>
         <option value="">Seleccione un rol</option>
         <option value="almacenista">Almacenista</option>
-        <option value="coordinador">Coordinador de área</option>
         <option value="gerente">Gerente</option>
         <option value="edi">Usuario EDI</option>
       </select>
       <label>Contraseña</label><input id="contrasena" type="password" required placeholder="Ingrese su contraseña">
       <button class="btn-primary" type="submit">🔐 INGRESAR</button>
-      <p class="login-note">Demostración académica: cualquier contraseña permite ingresar.</p>
+      <p id="loginError" class="login-note" style="color: #e63946; display: none;"></p>
     </form>
   </div>
 </section>
